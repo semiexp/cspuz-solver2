@@ -1,11 +1,8 @@
-import React from 'react';
+import { PuzzleSolver } from "./PuzzleSolver";
+import React from "react";
 
 function App() {
-  return (
-    <div className="App">
-      a
-    </div>
-  );
+    return <PuzzleSolver />;
 }
 
 export default App;

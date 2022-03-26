@@ -1,0 +1,22 @@
+import Module from "./cspuz_solver_backend";
+
+let Solver = null;
+
+Module().then(mod => {
+    Solver = mod;
+});
+
+export function solveProblem(url) {
+    const urlEncoded = new TextEncoder().encode(url);
+    const buf = Solver._malloc(urlEncoded.length);
+    Solver.HEAPU8.set(urlEncoded, buf);
+
+    const ans = Solver._solve_problem(buf, urlEncoded.length);
+    Solver._free(buf);
+
+    const length = Solver.HEAPU8[ans] | (Solver.HEAPU8[ans + 1] << 8) | (Solver.HEAPU8[ans + 2] << 16) | (Solver.HEAPU8[ans + 3] << 24);
+    const resultStr = new TextDecoder().decode(Solver.HEAPU8.slice(ans + 4, ans + 4 + length));
+    const result = JSON.parse(resultStr.substring(0, resultStr.length));
+
+    return result["description"];
+}
