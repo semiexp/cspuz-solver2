@@ -1,3 +1,13 @@
+# How to build
+
+To build `cspuz-solver2`, you have to correctly place `src/cspuz_solver_backend.js`, which can be built from [enigma_csp](https://github.com/semiexp/enigma_csp). The following command will work:
+
+```
+git clone --recursive https://github.com/semiexp/enigma_csp.git && cd enigma_csp
+./build_emcc --release
+cp target/wasm32-unknown-emscripten/release/deps/cspuz_solver_backend.js path/to/cspuz-solver2/src
+```
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
