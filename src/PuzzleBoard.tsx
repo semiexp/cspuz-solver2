@@ -52,6 +52,37 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <rect x={centerX - unitSize * 0.1} y={centerY - unitSize * 0.1} width={unitSize * 0.2} height={unitSize * 0.2} fill={color} />;
         } else if (item === "block") {
             return <rect x={centerX - unitSize * 0.45} y={centerY - unitSize * 0.45} width={unitSize * 0.9} height={unitSize * 0.9} fill={color} />;
+        } else if (item === "sideArrowUp" || item === "sideArrowDown" || item === "sideArrowLeft" || item === "sideArrowRight") {
+            let shape = [
+                [0.1, 0.1],
+                [0.5, 0.1],
+                [0.5, 0.05],
+                [0.9, 0.125],
+                [0.5, 0.2],
+                [0.5, 0.15],
+                [0.1, 0.15]
+            ];
+            let points = [];
+            for (let i = 0; i < shape.length; ++i) {
+                let dx = shape[i][0];
+                let dy = shape[i][1];
+
+                // affine transform
+                if (item === "sideArrowLeft" || item === "sideArrowUp") {
+                    dx = 1 - dx;
+                }
+                if (item === "sideArrowUp" || item === "sideArrowDown") {
+                    let tmp = dx;
+                    dx = dy;
+                    dy = tmp;
+                }
+
+                // adjust to the cell
+                dx = centerX + unitSize * (dx - 0.5);
+                dy = centerY + unitSize * (dy - 0.5);
+                points.push(String(dx) + "," + String(dy));
+            }
+            return <polygon points={points.join(" ")} stroke="none" fill="black" />
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
@@ -59,7 +90,23 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
         }
         throw new Error("unsupported item: " + item);
     } else if (isEdge) {
-        // TODO
+        const centerY = env.offsetY + unitSize * (y / 2);
+        const centerX = env.offsetX + unitSize * (x / 2);
+
+        if (item === "line") {
+            if (y % 2 === 1) {
+                return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} />;
+            } else {
+                return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} />;
+            }
+        } else if (item === "cross") {
+            const crossSize = unitSize * 0.1;
+            return <g>
+                <line x1={centerX - crossSize} x2={centerX + crossSize} y1={centerY - crossSize} y2={centerY + crossSize} strokeWidth={1} stroke={color} />
+                <line x1={centerX + crossSize} x2={centerX - crossSize} y1={centerY - crossSize} y2={centerY + crossSize} strokeWidth={1} stroke={color} />
+            </g>
+        }
+        throw new Error("unsupported item: " + item);
     }
     throw new Error("items must be on either vertices, cells, or edges");
 }
