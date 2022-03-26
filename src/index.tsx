@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import { PuzzleSolver } from "./PuzzleSolver";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <PuzzleSolver />
   </React.StrictMode>,
   document.getElementById('root')
 );
