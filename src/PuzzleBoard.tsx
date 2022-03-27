@@ -105,6 +105,13 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 <line x1={centerX - crossSize} x2={centerX + crossSize} y1={centerY - crossSize} y2={centerY + crossSize} strokeWidth={1} stroke={color} />
                 <line x1={centerX + crossSize} x2={centerX - crossSize} y1={centerY - crossSize} y2={centerY + crossSize} strokeWidth={1} stroke={color} />
             </g>
+        } else if (item === "wall" || item === "boldWall") {
+            const strokeWidth = (item === "boldWall" ? 2 : 1);
+            if (y % 2 === 0) {
+                return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={strokeWidth} stroke={color} />;
+            } else {
+                return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={strokeWidth} stroke={color} />;
+            }
         }
         throw new Error("unsupported item: " + item);
     }
