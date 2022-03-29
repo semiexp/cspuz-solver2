@@ -28,6 +28,8 @@ export type Item =
     | "line"
     | "wall"
     | "boldWall"
+    | "dottedHorizontalWall"
+    | "dottedVerticalWall"
     | { kind: "text", data: string };
 
 type RenderEnv = {
@@ -52,6 +54,8 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <rect x={centerX - unitSize * 0.1} y={centerY - unitSize * 0.1} width={unitSize * 0.2} height={unitSize * 0.2} fill={color} />;
         } else if (item === "block") {
             return <rect x={centerX - unitSize * 0.45} y={centerY - unitSize * 0.45} width={unitSize * 0.9} height={unitSize * 0.9} fill={color} />;
+        } else if (item === "fill") {
+            return <rect x={centerX - unitSize * 0.5} y={centerY - unitSize * 0.5} width={unitSize} height={unitSize} fill={color} />;
         } else if (item === "sideArrowUp" || item === "sideArrowDown" || item === "sideArrowLeft" || item === "sideArrowRight") {
             let shape = [
                 [0.1, 0.1],
@@ -82,11 +86,17 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 dy = centerY + unitSize * (dy - 0.5);
                 points.push(String(dx) + "," + String(dy));
             }
-            return <polygon points={points.join(" ")} stroke="none" fill="black" />
+            return <polygon points={points.join(" ")} stroke="none" fill={color} />
+        } else if (item === "circle") {
+            return <circle cx={centerX} cy={centerY} r={unitSize * 0.4} stroke={color} fill="none" />
+        } else if (item === "dottedHorizontalWall") {
+            return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} strokeDasharray="4 2" />
+        } else if (item === "dottedVerticalWall") {
+            return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} strokeDasharray="4 2" />
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
-            return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }}>{item.data}</text>;
+            return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }} fill={color}>{item.data}</text>;
         }
         throw new Error("unsupported item: " + item);
     } else if (isEdge) {
@@ -146,6 +156,15 @@ export function renderBoard(board: Board): ReactElement {
         for (let x = 0; x <= width; ++x) {
             const lineWidth = (x === 0 || x === width) ? 2 : 1;
             components.push(<line x1={margin + x * unitSize} x2={margin + x * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={lineWidth} stroke="black" />);
+        }
+    } else if (board.defaultStyle === "dots") {
+        const dotSizeHalf = unitSize / 10;
+        for (let y = 0; y <= height; ++y) {
+            for (let x = 0; x <= width; ++x) {
+                const centerY = env.offsetY + unitSize * y;
+                const centerX = env.offsetX + unitSize * x;
+                components.push(<rect x={centerX - dotSizeHalf} y={centerY - dotSizeHalf} height={dotSizeHalf * 2} width={dotSizeHalf * 2} fill="black" />);
+            }
         }
     }
 
