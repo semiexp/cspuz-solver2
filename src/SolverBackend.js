@@ -1,22 +1,36 @@
-import Module from "./cspuz_solver_backend";
+import Worker from "worker-loader!./SolverWorker.js";
 
-let Solver = null;
-
-Module().then(mod => {
-    Solver = mod;
-});
+let worker = null;
+let currentReject = null;
 
 export function solveProblem(url) {
-    const urlEncoded = new TextEncoder().encode(url);
-    const buf = Solver._malloc(urlEncoded.length);
-    Solver.HEAPU8.set(urlEncoded, buf);
+    if (worker === null) {
+        worker = new Worker();
+    }
+    if (currentReject !== null) {
+        // TODO
+        return new Promise((resolve, reject) => {
+            reject("solver already running");
+        });
+    }
+    return new Promise((resolve, reject) => {
+        worker.onmessage = (e) => {
+            currentReject = null;
+            resolve(e.data);
+        };
+        worker.postMessage(url);
+        currentReject = reject;
+    });
+}
 
-    const ans = Solver._solve_problem(buf, urlEncoded.length);
-    Solver._free(buf);
+export function terminateWorker() {
+    if (worker === null) return;
+    worker.terminate();
+    worker = null;
 
-    const length = Solver.HEAPU8[ans] | (Solver.HEAPU8[ans + 1] << 8) | (Solver.HEAPU8[ans + 2] << 16) | (Solver.HEAPU8[ans + 3] << 24);
-    const resultStr = new TextDecoder().decode(Solver.HEAPU8.slice(ans + 4, ans + 4 + length));
-    const result = JSON.parse(resultStr.substring(0, resultStr.length));
-
-    return result["description"];
+    if (currentReject !== null) {
+        const reject = currentReject;
+        currentReject = null;
+        reject("terminated");
+    }
 }

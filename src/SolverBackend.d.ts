@@ -1,3 +1,4 @@
 import { Board } from "./PuzzleBoard";
 
-declare function solveProblem(url: string): string | Board;
+declare async function solveProblem(url: string): Promise<string | Board>;
+declare function terminateWorker();

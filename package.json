@@ -27,7 +27,11 @@
       "react-app",
       "react-app/jest"
     ],
-    "ignorePatterns": ["*/cspuz_solver_backend.js"]
+    "ignorePatterns": [
+      "src/cspuz_solver_backend.js",
+      "src/SolverBackend.js",
+      "src/SolverWorker.js"
+    ]
   },
   "browserslist": {
     "production": [
@@ -40,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "worker-loader": "^3.0.8"
   }
 }
