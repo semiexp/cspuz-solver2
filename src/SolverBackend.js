@@ -8,7 +8,6 @@ export function solveProblem(url) {
         worker = new Worker();
     }
     if (currentReject !== null) {
-        // TODO
         return new Promise((resolve, reject) => {
             reject("solver already running");
         });
