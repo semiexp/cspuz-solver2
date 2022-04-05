@@ -171,7 +171,7 @@ export function renderBoard(board: Board): ReactElement {
     const svgHeight = height * unitSize + margin * 2;
     const svgWidth = width * unitSize + margin * 2;
 
-    return <svg height={svgHeight} width={svgWidth}>
+    return <svg height={svgHeight} width={svgWidth} style={{backgroundColor: "#ffffff"}}>
         <g>
         {components}
         </g>
