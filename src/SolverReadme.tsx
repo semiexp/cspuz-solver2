@@ -1,7 +1,6 @@
 import React from "react";
 import { ToggleMsg } from "./ToggleMsg";
 import { usageText } from "./ReadmeText";
-import { licenseText } from "./LicenseText";
 
 export class SolverReadme extends React.Component<{}, {}> {
     constructor(props: {}) {
