@@ -4,7 +4,7 @@ module.exports = function override(config, env) {
         use: {
             loader: "worker-loader",
             options: {
-                filename: "SolverWorker.worker.js"
+                filename: "static/js/SolverWorker.worker.js"
             }
         }
     });
@@ -13,9 +13,12 @@ module.exports = function override(config, env) {
         use: {
             loader: "worker-loader",
             options: {
-                filename: "DoublechocoSolverWorker.worker.js"
+                filename: "static/js/DoublechocoSolverWorker.worker.js"
             }
         }
     });
+    config.output.filename = "static/js/main.js";
+    config.output.chunkFilename = "static/js/main.js";
+
     return config;
 }

@@ -49,5 +49,6 @@
   "devDependencies": {
     "react-app-rewired": "^2.2.1",
     "worker-loader": "^3.0.8"
-  }
+  },
+  "homepage": "."
 }
