@@ -17,10 +17,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -29,8 +29,9 @@
     ],
     "ignorePatterns": [
       "src/cspuz_solver_backend.js",
-      "src/SolverBackend.js",
-      "src/SolverWorker.js"
+      "src/doublechoco_solver.js",
+      "src/*SolverBackend.js",
+      "src/*SolverWorker.js"
     ]
   },
   "browserslist": {
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "react-app-rewired": "^2.2.1",
     "worker-loader": "^3.0.8"
   }
 }

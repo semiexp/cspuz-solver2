@@ -1,9 +1,9 @@
-import Worker from "./SolverWorker.js";
+import Worker from "./DoublechocoSolverWorker.js";
 
 let worker = null;
 let currentReject = null;
 
-export function solveProblem(url) {
+export function solveDoublechocoProblem(url) {
     if (worker === null) {
         worker = new Worker();
     }
@@ -22,7 +22,7 @@ export function solveProblem(url) {
     });
 }
 
-export function terminateWorker() {
+export function terminateDoublechocoWorker() {
     if (worker === null) return;
     worker.terminate();
     worker = null;

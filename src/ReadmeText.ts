@@ -4,7 +4,7 @@ export const usageText = `"Problem URL" に問題の URL (ぱずぷれ / puzz.li
 
 このソルバーは、問題を「解ける限り」解きます。 つまり、複数解がある場合でも、すべての解に共通して決定する線、マスなどをすべて決定します。
 
-現在、ぬりかべ / スリザーリンク / ヤジリン / へやわけ / スラローム に対応しています。
+現在、ぬりかべ / スリザーリンク / ヤジリン / へやわけ / スラローム / ダブルチョコ に対応しています。
 
 免責事項: このソルバーを使用することによって生じたいかなる問題についても、作者は責任を負わないものとします。
 
@@ -15,7 +15,7 @@ This solver computes the answer using CPU of your computer, so it keeps on solvi
 
 This solver solves given problems "as much as possible"; that is, even if they have multiple solutions, the solver reports all the common lines, cells and so on, in all solutions.
 
-Currently, this solver supports Nurikabe, Slitherlink, Yajilin, Heyawake and Slalom.
+Currently, this solver supports Nurikabe, Slitherlink, Yajilin, Heyawake, Slalom and Double Choco.
 
 Disclaimer: The author shall not be liable for any problem caused by using this solver.
 

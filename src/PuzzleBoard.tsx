@@ -6,7 +6,7 @@ export type Board =
         kind: "grid",
         height: number,
         width: number,
-        defaultStyle: "grid" | "dots",
+        defaultStyle: "outer_grid" | "grid" | "dots",
         data: {
             y: number,
             x: number,
@@ -148,7 +148,12 @@ export function renderBoard(board: Board): ReactElement {
     const height = board.height;
     const width = board.width;
 
-    if (board.defaultStyle === "grid") {
+    if (board.defaultStyle === "outer_grid") {
+        components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin} y2={margin} strokeWidth={2} stroke="black" />);
+        components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + height * unitSize} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+        components.push(<line x1={margin} x2={margin} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+        components.push(<line x1={margin + width * unitSize} x2={margin + width * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+    } else if (board.defaultStyle === "grid") {
         for (let y = 0; y <= height; ++y) {
             const lineWidth = (y === 0 || y === height) ? 2 : 1;
             components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + y * unitSize} y2={margin + y * unitSize} strokeWidth={lineWidth} stroke="black" />);

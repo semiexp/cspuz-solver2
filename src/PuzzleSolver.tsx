@@ -1,6 +1,7 @@
 import React from "react";
 import { Board, renderBoard } from "./PuzzleBoard";
 import { solveProblem, terminateWorker } from "./SolverBackend";
+import { solveDoublechocoProblem, terminateDoublechocoWorker } from "./DoublechocoSolverBackend";
 
 type PuzzleSolverState = {
     problemUrl: string,
@@ -8,6 +9,7 @@ type PuzzleSolverState = {
     message?: string,
     board?: Board,
     solverRunning: boolean,
+    doublechoco: boolean,
 };
 
 export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
@@ -17,6 +19,7 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
         this.state = {
             problemUrl: "",
             solverRunning: false,
+            doublechoco: false,
         };
     }
 
@@ -31,17 +34,20 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
         const solve = async () => {
             const url = this.state.problemUrl;
 
+            const doublechoco = url.startsWith("https://puzz.link/p?dbchoco");
+
             this.setState({
                 error: undefined,
                 board: undefined,
                 message: "Now solving...",
                 solverRunning: true,
+                doublechoco,
             });
 
             const start = Date.now();
 
             try {
-                const result = await solveProblem(url);
+                const result = doublechoco ? await solveDoublechocoProblem(url) : await solveProblem(url);
                 const elapsed = (Date.now() - start) / 1000;
 
                 if (typeof result === "string") {
@@ -50,6 +56,7 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
                         board: undefined,
                         message: undefined,
                         solverRunning: false,
+                        doublechoco: false,
                     });
                 } else {
                     this.setState({
@@ -57,6 +64,7 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
                         board: result,
                         message: "Done! (" + elapsed + "[s])",
                         solverRunning: false,
+                        doublechoco: false,
                     })
                 }
             } catch (e: any) {
@@ -65,11 +73,16 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
                     board: undefined,
                     message: undefined,
                     solverRunning: false,
+                    doublechoco: false,
                 });
             }
         };
         const stop = () => {
-            terminateWorker();
+            if (this.state.doublechoco) {
+                terminateDoublechocoWorker();
+            } else {
+                terminateWorker();
+            }
         };
 
         return (
