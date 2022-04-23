@@ -1,6 +1,9 @@
 import React from "react";
 import { ReactElement } from "react";
 
+export type MultipleAnswers = { common: Board, answers: Board[] };
+export type Result = Board | MultipleAnswers;
+
 export type Board = 
     | {
         kind: "grid",
@@ -128,7 +131,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
     throw new Error("items must be on either vertices, cells, or edges");
 }
 
-export function renderBoard(board: Board): ReactElement {
+export function renderBoard(boards: Board[]): ReactElement {
     const margin = 30;
     const unitSize = 30; 
 
@@ -139,42 +142,48 @@ export function renderBoard(board: Board): ReactElement {
     };
 
     const components = [];
+    let heightMax = 0;
+    let widthMax = 0;
 
-    for (let i = 0; i < board.data.length; ++i) {
-        const elem = board.data[i];
-        components.push(renderItem(env, elem.y, elem.x, elem.color, elem.item));
-    }
-
-    const height = board.height;
-    const width = board.width;
-
-    if (board.defaultStyle === "outer_grid") {
-        components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin} y2={margin} strokeWidth={2} stroke="black" />);
-        components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + height * unitSize} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
-        components.push(<line x1={margin} x2={margin} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
-        components.push(<line x1={margin + width * unitSize} x2={margin + width * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
-    } else if (board.defaultStyle === "grid") {
-        for (let y = 0; y <= height; ++y) {
-            const lineWidth = (y === 0 || y === height) ? 2 : 1;
-            components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + y * unitSize} y2={margin + y * unitSize} strokeWidth={lineWidth} stroke="black" />);
+    for (const board of boards) {
+        for (let i = 0; i < board.data.length; ++i) {
+            const elem = board.data[i];
+            components.push(renderItem(env, elem.y, elem.x, elem.color, elem.item));
         }
-        for (let x = 0; x <= width; ++x) {
-            const lineWidth = (x === 0 || x === width) ? 2 : 1;
-            components.push(<line x1={margin + x * unitSize} x2={margin + x * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={lineWidth} stroke="black" />);
-        }
-    } else if (board.defaultStyle === "dots") {
-        const dotSizeHalf = unitSize / 10;
-        for (let y = 0; y <= height; ++y) {
+
+        const height = board.height;
+        const width = board.width;
+        heightMax = Math.max(heightMax, height);
+        widthMax = Math.max(widthMax, width);
+
+        if (board.defaultStyle === "outer_grid") {
+            components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin} y2={margin} strokeWidth={2} stroke="black" />);
+            components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + height * unitSize} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+            components.push(<line x1={margin} x2={margin} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+            components.push(<line x1={margin + width * unitSize} x2={margin + width * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={2} stroke="black" />);
+        } else if (board.defaultStyle === "grid") {
+            for (let y = 0; y <= height; ++y) {
+                const lineWidth = (y === 0 || y === height) ? 2 : 1;
+                components.push(<line x1={margin} x2={margin + width * unitSize} y1={margin + y * unitSize} y2={margin + y * unitSize} strokeWidth={lineWidth} stroke="black" />);
+            }
             for (let x = 0; x <= width; ++x) {
-                const centerY = env.offsetY + unitSize * y;
-                const centerX = env.offsetX + unitSize * x;
-                components.push(<rect x={centerX - dotSizeHalf} y={centerY - dotSizeHalf} height={dotSizeHalf * 2} width={dotSizeHalf * 2} fill="black" />);
+                const lineWidth = (x === 0 || x === width) ? 2 : 1;
+                components.push(<line x1={margin + x * unitSize} x2={margin + x * unitSize} y1={margin} y2={margin + height * unitSize} strokeWidth={lineWidth} stroke="black" />);
+            }
+        } else if (board.defaultStyle === "dots") {
+            const dotSizeHalf = unitSize / 10;
+            for (let y = 0; y <= height; ++y) {
+                for (let x = 0; x <= width; ++x) {
+                    const centerY = env.offsetY + unitSize * y;
+                    const centerX = env.offsetX + unitSize * x;
+                    components.push(<rect x={centerX - dotSizeHalf} y={centerY - dotSizeHalf} height={dotSizeHalf * 2} width={dotSizeHalf * 2} fill="black" />);
+                }
             }
         }
     }
 
-    const svgHeight = height * unitSize + margin * 2;
-    const svgWidth = width * unitSize + margin * 2;
+    const svgHeight = heightMax * unitSize + margin * 2;
+    const svgWidth = widthMax * unitSize + margin * 2;
 
     return <svg height={svgHeight} width={svgWidth} style={{backgroundColor: "#ffffff"}}>
         <g>

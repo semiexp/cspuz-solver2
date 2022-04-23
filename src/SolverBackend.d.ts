@@ -1,4 +1,4 @@
-import { Board } from "./PuzzleBoard";
+import { Result } from "./PuzzleBoard";
 
-declare async function solveProblem(url: string): Promise<string | Board>;
+declare async function solveProblem(url: string, numAnswers?: number): Promise<string | Result>;
 declare function terminateWorker();

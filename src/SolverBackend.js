@@ -3,7 +3,7 @@ import Worker from "./SolverWorker.js";
 let worker = null;
 let currentReject = null;
 
-export function solveProblem(url) {
+export function solveProblem(url, numAnswers) {
     if (worker === null) {
         worker = new Worker();
     }
@@ -17,7 +17,7 @@ export function solveProblem(url) {
             currentReject = null;
             resolve(e.data);
         };
-        worker.postMessage(url);
+        worker.postMessage({url, numAnswers});
         currentReject = reject;
     });
 }
