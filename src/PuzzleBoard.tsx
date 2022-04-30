@@ -33,7 +33,8 @@ export type Item =
     | "boldWall"
     | "dottedHorizontalWall"
     | "dottedVerticalWall"
-    | { kind: "text", data: string };
+    | { kind: "text", data: string }
+    | { kind: "compass", up: number, down: number, left: number, right: number };
 
 type RenderEnv = {
     offsetY: number,
@@ -99,7 +100,26 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
-            return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }} fill={color}>{item.data}</text>;
+            if (item.kind === "text") {
+                return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }} fill={color}>{item.data}</text>;
+            } else if (item.kind === "compass") {
+                return <g>
+                    <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
+                    <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY + unitSize / 2} y2={centerY - unitSize / 2} strokeWidth={1} stroke={color} />
+                    {
+                        item.up >= 0 && <text x={centerX} y={centerY - unitSize * 0.3} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.4 }} fill={color}>{item.up}</text>
+                    }
+                    {
+                        item.down >= 0 && <text x={centerX} y={centerY + unitSize * 0.3} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.4 }} fill={color}>{item.down}</text>
+                    }
+                    {
+                        item.left >= 0 && <text x={centerX - unitSize * 0.3} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.4 }} fill={color}>{item.left}</text>
+                    }
+                    {
+                        item.right >= 0 && <text x={centerX + unitSize * 0.3} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.4 }} fill={color}>{item.right}</text>
+                    }
+                </g>
+            }
         }
         throw new Error("unsupported item: " + item);
     } else if (isEdge) {
