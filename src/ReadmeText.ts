@@ -8,7 +8,7 @@ export const usageText = `"Problem URL" に問題の URL (ぱずぷれ / puzz.li
 免責事項: このソルバーを使用することによって生じたいかなる問題についても、作者は責任を負わないものとします。
 
 対応パズル一覧
-解答 (Solve): ぬりかべ、スリザーリンク、ヤジリン、へやわけ、スラローム、ダブルチョコ
+解答 (Solve): ぬりかべ、スリザーリンク、ヤジリン、へやわけ、スラローム、ダブルチョコ、ぬりみさき、Compass、美術館、LITS、ましゅ、シャカシャカ
 列挙 (List Answers): へやわけ
 
 ==================
@@ -22,7 +22,7 @@ This solver solves given problems "as much as possible"; that is, even if they h
 Disclaimer: The author shall not be liable for any problem caused by using this solver.
 
 List of supported puzzles
-Solve: Nurikabe, Slitherlink, Yajilin, Heyawake, Slalom and Double Choco
+Solve: Nurikabe, Slitherlink, Yajilin, Heyawake, Slalom, Double Choco, Nurimisaki, Compass, Akari, LITS, Masyu, and Shakashaka
 List Answers: Heyawake
 
 `;
