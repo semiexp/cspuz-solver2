@@ -23,6 +23,7 @@ export type Item =
     | "block"
     | "fill"
     | "circle"
+    | "filledCircle"
     | "sideArrowUp"
     | "sideArrowDown"
     | "sideArrowLeft"
@@ -93,6 +94,8 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <polygon points={points.join(" ")} stroke="none" fill={color} />
         } else if (item === "circle") {
             return <circle cx={centerX} cy={centerY} r={unitSize * 0.4} stroke={color} fill="none" />
+        } else if (item === "filledCircle") {
+            return <circle cx={centerX} cy={centerY} r={unitSize * 0.4} stroke={color} fill={color} />
         } else if (item === "dottedHorizontalWall") {
             return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} strokeDasharray="4 2" />
         } else if (item === "dottedVerticalWall") {
