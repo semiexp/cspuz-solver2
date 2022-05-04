@@ -28,6 +28,10 @@ export type Item =
     | "sideArrowDown"
     | "sideArrowLeft"
     | "sideArrowRight"
+    | "aboloUpperLeft"
+    | "aboloUpperRight"
+    | "aboloLowerLeft"
+    | "aboloLowerRight"
     | "cross"
     | "line"
     | "wall"
@@ -92,6 +96,14 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 points.push(String(dx) + "," + String(dy));
             }
             return <polygon points={points.join(" ")} stroke="none" fill={color} />
+        } else if (item === "aboloUpperLeft") {
+            return <polygon points={aboloPoints(centerY, centerX, unitSize, 2)} stroke="none" fill={color} />;
+        } else if (item === "aboloUpperRight") {
+            return <polygon points={aboloPoints(centerY, centerX, unitSize, 1)} stroke="none" fill={color} />;
+        } else if (item === "aboloLowerLeft") {
+            return <polygon points={aboloPoints(centerY, centerX, unitSize, 3)} stroke="none" fill={color} />;
+        } else if (item === "aboloLowerRight") {
+            return <polygon points={aboloPoints(centerY, centerX, unitSize, 0)} stroke="none" fill={color} />;
         } else if (item === "circle") {
             return <circle cx={centerX} cy={centerY} r={unitSize * 0.4} stroke={color} fill="none" />
         } else if (item === "filledCircle") {
@@ -152,6 +164,23 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
         throw new Error("unsupported item: " + item);
     }
     throw new Error("items must be on either vertices, cells, or edges");
+}
+
+function aboloPoints(centerY: number, centerX: number, unitSize: number, skip: number): string {
+    let ret = [];
+    if (skip !== 0) {
+        ret.push(`${centerX - unitSize / 2},${centerY - unitSize / 2}`);
+    }
+    if (skip !== 1) {
+        ret.push(`${centerX - unitSize / 2},${centerY + unitSize / 2}`);
+    }
+    if (skip !== 2) {
+        ret.push(`${centerX + unitSize / 2},${centerY + unitSize / 2}`);
+    }
+    if (skip !== 3) {
+        ret.push(`${centerX + unitSize / 2},${centerY - unitSize / 2}`);
+    }
+    return ret.join(" ");
 }
 
 export function renderBoard(boards: Board[]): ReactElement {
