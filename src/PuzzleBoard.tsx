@@ -24,6 +24,8 @@ export type Item =
     | "fill"
     | "circle"
     | "filledCircle"
+    | "smallCircle"
+    | "smallFilledCircle"
     | "sideArrowUp"
     | "sideArrowDown"
     | "sideArrowLeft"
@@ -191,6 +193,10 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             } else {
                 return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={strokeWidth} stroke={color} />;
             }
+        } else if (item === "smallCircle") {
+            return <circle cx={centerX} cy={centerY} r={unitSize * 0.1} stroke={color} fill="none" />
+        } else if (item === "smallFilledCircle") {
+            return <circle cx={centerX} cy={centerY} r={unitSize * 0.1} stroke={color} fill={color} />
         }
         throw new Error("unsupported item: " + item);
     }
