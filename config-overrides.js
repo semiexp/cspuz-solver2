@@ -1,3 +1,5 @@
+const CopyPlugin = require("copy-webpack-plugin");
+
 module.exports = function override(config, env) {
     config.module.rules.push({
         test: /\/SolverWorker\.js/,
@@ -17,6 +19,11 @@ module.exports = function override(config, env) {
             }
         }
     });
+    config.plugins.push(new CopyPlugin({
+        patterns: [
+            { from: "src/cspuz_solver_backend.wasm", to: "static/js/cspuz_solver_backend.wasm" },
+        ],
+    }));
     config.output.filename = "static/js/main.js";
     config.output.chunkFilename = "static/js/main.js";
 
