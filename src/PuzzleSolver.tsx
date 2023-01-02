@@ -58,7 +58,7 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
             const start = Date.now();
 
             try {
-                const result = doublechoco ? await solveDoublechocoProblem(url) : await solveProblem(url, enumerateAnswers ? 100 : 0);
+                const result = doublechoco ? await solveDoublechocoProblem(url) : await solveProblem(url, enumerateAnswers ? this.state.numMaxAnswer : 0);
                 const elapsed = (Date.now() - start) / 1000;
 
                 if (typeof result === "string") {
