@@ -30,6 +30,10 @@ export type Item =
     | "sideArrowDown"
     | "sideArrowLeft"
     | "sideArrowRight"
+    | "arrowUp"
+    | "arrowDown"
+    | "arrowLeft"
+    | "arrowRight"
     | "aboloUpperLeft"
     | "aboloUpperRight"
     | "aboloLowerLeft"
@@ -68,7 +72,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <rect x={centerX - unitSize * 0.45} y={centerY - unitSize * 0.45} width={unitSize * 0.9} height={unitSize * 0.9} fill={color} />;
         } else if (item === "fill") {
             return <rect x={centerX - unitSize * 0.5} y={centerY - unitSize * 0.5} width={unitSize} height={unitSize} fill={color} />;
-        } else if (item === "sideArrowUp" || item === "sideArrowDown" || item === "sideArrowLeft" || item === "sideArrowRight") {
+        } else if (item === "sideArrowUp" || item === "sideArrowDown" || item === "sideArrowLeft" || item === "sideArrowRight" || item === "arrowUp" || item === "arrowDown" || item === "arrowLeft" || item === "arrowRight") {
             let shape = [
                 [0.1, 0.1],
                 [0.5, 0.1],
@@ -83,11 +87,14 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 let dx = shape[i][0];
                 let dy = shape[i][1];
 
-                // affine transform
-                if (item === "sideArrowLeft" || item === "sideArrowUp") {
+                // transform
+                if (item.startsWith("arrow")) {
+                    dy *= 4;
+                }
+                if (item === "sideArrowLeft" || item === "sideArrowUp" || item === "arrowLeft" || item === "arrowUp") {
                     dx = 1 - dx;
                 }
-                if (item === "sideArrowUp" || item === "sideArrowDown") {
+                if (item === "sideArrowUp" || item === "sideArrowDown" || item === "arrowUp" || item === "arrowDown") {
                     let tmp = dx;
                     dx = dy;
                     dy = tmp;
