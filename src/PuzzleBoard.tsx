@@ -40,13 +40,17 @@ export type Item =
     | "aboloLowerRight"
     | "cross"
     | "line"
+    | "doubleLine"
     | "wall"
     | "boldWall"
+    | "slash"
+    | "backslash"
     | "dottedHorizontalWall"
     | "dottedVerticalWall"
     | { kind: "text", data: string }
     | { kind: "compass", up: number, down: number, left: number, right: number }
-    | { kind: "tapaClue", value: number[] };
+    | { kind: "tapaClue", value: number[] }
+    | { kind: "sudokuCandidateSet", size: number, values: number[] };
 
 type RenderEnv = {
     offsetY: number,
@@ -122,6 +126,10 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} strokeDasharray="4 2" />
         } else if (item === "dottedVerticalWall") {
             return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} strokeDasharray="4 2" />
+        } else if (item === "slash") {
+            return <line x1={centerX + unitSize / 2} x2={centerX - unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
+        } else if (item === "backslash") {
+            return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
@@ -174,6 +182,17 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                         <text x={centerX + unitSize * 0.3} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.6 }} fill={color}>{values[3]}</text>
                     </g>;
                 }
+            } else if (item.kind === "sudokuCandidateSet") {
+                let items = [];
+                for (let i = 0; i < item.values.length; ++i) {
+                    const n = item.values[i];
+                    const gx = (n - 1) % item.size;
+                    const gy = Math.floor((n - 1) / item.size);
+                    const x = centerX - unitSize / 2 + (gx + 0.5) / item.size * unitSize;
+                    const y = centerY - unitSize / 2 + (gy + 0.5) / item.size * unitSize;
+                    items.push(<text x={x} y={y} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize / item.size }} fill={color}>{n}</text>);
+                }
+                return <g>{items}</g>;
             }
         }
         throw new Error("unsupported item: " + item);
@@ -186,6 +205,18 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} />;
             } else {
                 return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} />;
+            }
+        } else if (item === "doubleLine") {
+            if (y % 2 === 1) {
+                return <g>
+                    <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 10} y2={centerY - unitSize / 10} strokeWidth={2} stroke={color} />
+                    <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY + unitSize / 10} y2={centerY + unitSize / 10} strokeWidth={2} stroke={color} />
+                </g>;
+            } else {
+                return <g>
+                    <line x1={centerX - unitSize / 10} x2={centerX - unitSize / 10} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} />
+                    <line x1={centerX + unitSize / 10} x2={centerX + unitSize / 10} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} />
+                </g>;
             }
         } else if (item === "cross") {
             const crossSize = unitSize * 0.1;
