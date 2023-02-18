@@ -38,6 +38,10 @@ export type Item =
     | "aboloUpperRight"
     | "aboloLowerLeft"
     | "aboloLowerRight"
+    | "pencilUp"
+    | "pencilDown"
+    | "pencilLeft"
+    | "pencilRight"
     | "cross"
     | "line"
     | "doubleLine"
@@ -118,6 +122,14 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <polygon points={aboloPoints(centerY, centerX, unitSize, 3)} stroke="none" fill={color} />;
         } else if (item === "aboloLowerRight") {
             return <polygon points={aboloPoints(centerY, centerX, unitSize, 0)} stroke="none" fill={color} />;
+        } else if (item === "pencilLeft") {
+            return pencilElement(centerY, centerX, unitSize, 3, color);
+        } else if (item === "pencilRight") {
+            return pencilElement(centerY, centerX, unitSize, 1, color);
+        } else if (item === "pencilUp") {
+            return pencilElement(centerY, centerX, unitSize, 0, color);
+        } else if (item === "pencilDown") {
+            return pencilElement(centerY, centerX, unitSize, 2, color);
         } else if (item === "circle") {
             return <circle cx={centerX} cy={centerY} r={unitSize * 0.4} stroke={color} fill="none" />
         } else if (item === "filledCircle") {
@@ -256,6 +268,30 @@ function aboloPoints(centerY: number, centerX: number, unitSize: number, skip: n
         ret.push(`${centerX + unitSize / 2},${centerY - unitSize / 2}`);
     }
     return ret.join(" ");
+}
+
+function pencilPoints(centerY: number, centerX: number, unitSize: number, start: number): string {
+    let ret = [`${centerX},${centerY}`];
+    if (start === 3 || start === 0) {
+        ret.push(`${centerX - unitSize / 2},${centerY - unitSize / 2}`);
+    }
+    if (start === 0 || start === 1) {
+        ret.push(`${centerX + unitSize / 2},${centerY - unitSize / 2}`);
+    }
+    if (start === 1 || start === 2) {
+        ret.push(`${centerX + unitSize / 2},${centerY + unitSize / 2}`);
+    }
+    if (start === 2 || start === 3) {
+        ret.push(`${centerX - unitSize / 2},${centerY + unitSize / 2}`);
+    }
+    return ret.join(" ");
+}
+
+function pencilElement(centerY: number, centerX: number, unitSize: number, start: number, color: string): ReactElement {
+    return <g>
+        <polygon points={pencilPoints(centerY, centerX, unitSize, start)} stroke={color} fill="none" />
+        <polygon points={pencilPoints(centerY, centerX, unitSize * 0.5, start)} stroke="none" fill={color} />
+    </g>;
 }
 
 export function renderBoard(boards: Board[]): ReactElement {
