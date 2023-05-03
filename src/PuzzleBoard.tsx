@@ -44,17 +44,20 @@ export type Item =
     | "pencilRight"
     | "cross"
     | "line"
+    | "dottedLine"
     | "doubleLine"
     | "wall"
     | "boldWall"
     | "slash"
     | "backslash"
+    | "plus"
     | "dottedHorizontalWall"
     | "dottedVerticalWall"
-    | { kind: "text", data: string }
+    | { kind: "text", data: string, pos?: string }
     | { kind: "compass", up: number, down: number, left: number, right: number }
     | { kind: "tapaClue", value: number[] }
-    | { kind: "sudokuCandidateSet", size: number, values: number[] };
+    | { kind: "sudokuCandidateSet", size: number, values: number[] }
+    | { kind: "lineTo", destY: number, destX: number };
 
 type RenderEnv = {
     offsetY: number,
@@ -68,6 +71,15 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
     const isEdge = !(isVertex || isCell);
 
     const unitSize = env.unitSize;
+
+    if (typeof item !== "string" && item.kind === "lineTo") {
+        const y1 = env.offsetY + unitSize * (y / 2);
+        const x1 = env.offsetX + unitSize * (x / 2);
+        const y2 = env.offsetY + unitSize * (item.destY / 2);
+        const x2 = env.offsetX + unitSize * (item.destX / 2);
+
+        return <line x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={2} stroke={color} />;
+    }
     if (isVertex) {
         throw new Error("items on vertices are not supported");
     } else if (isCell) {
@@ -142,11 +154,35 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
             return <line x1={centerX + unitSize / 2} x2={centerX - unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
         } else if (item === "backslash") {
             return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
+        } else if (item === "plus") {
+            return <g>
+                <line x1={centerX - unitSize * 0.4} x2={centerX + unitSize * 0.4} y1={centerY} y2={centerY} strokeWidth={4} stroke={color} />
+                <line x1={centerX} x2={centerX} y1={centerY - unitSize * 0.4} y2={centerY + unitSize * 0.4} strokeWidth={4} stroke={color} />
+            </g>;
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
             if (item.kind === "text") {
-                return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }} fill={color}>{item.data}</text>;
+                if (item.pos) {
+                    let xRatio = 0;
+                    let yRatio = 0;
+                    if (item.pos === "upperLeft") {
+                        xRatio = -0.25;
+                        yRatio = -0.25;
+                    } else if (item.pos === "upperRight") {
+                        xRatio = 0.25;
+                        yRatio = -0.25;
+                    } else if (item.pos === "lowerLeft") {
+                        xRatio = -0.25;
+                        yRatio = 0.25;
+                    } else if (item.pos === "lowerRight") {
+                        xRatio = 0.25;
+                        yRatio = 0.25;
+                    }
+                    return <text x={centerX + unitSize * xRatio} y={centerY + unitSize * yRatio} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.5 }} fill={color}>{item.data}</text>;
+                } else {
+                    return <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize * 0.8 }} fill={color}>{item.data}</text>;
+                }
             } else if (item.kind === "compass") {
                 return <g>
                     <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
@@ -217,6 +253,12 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} />;
             } else {
                 return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} />;
+            }
+        } else if (item === "dottedLine") {
+            if (y % 2 === 1) {
+                return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={2} stroke={color} strokeDasharray="4 2" />;
+            } else {
+                return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={2} stroke={color} strokeDasharray="4 2" />;
             }
         } else if (item === "doubleLine") {
             if (y % 2 === 1) {
