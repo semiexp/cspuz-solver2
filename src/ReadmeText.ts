@@ -8,7 +8,7 @@ export const usageText = `"Problem URL" に問題の URL (ぱずぷれ / puzz.li
 免責事項: このソルバーを使用することによって生じたいかなる問題についても、作者は責任を負わないものとします。
 
 対応パズル一覧
-解答 (Solve): ぬりかべ、スリザーリンク、ヤジリン、へやわけ、∀人∃ＨＥＹＡ、スラローム、ダブルチョコ、ぬりみさき、Compass、美術館、LITS、ましゅ、シャカシャカ、相ダ部屋、Aqre、Tapa、シンプルループ、ヘヤジリン、Kropki、Castle Wall、島国、のりのり、Coral、クロット、バッグ、カーブデータ、四角に切れ、数独、さしがね、Lohkous、橋をかけろ、ヘルゴルフ、Slash Pack、月か太陽、フィルオミノ、チョコバナナ、ファイブセルズ、カクテルランプ、ストストーン、ペンシルズ、Tricklayer、バーンズ、リフレクトリンク、リングリング、環状線スペシャル、なげなわ、アイスウォーク、交差は直角に限る
+解答 (Solve): ぬりかべ、スリザーリンク、ヤジリン、へやわけ、∀人∃ＨＥＹＡ、スラローム、ダブルチョコ、ぬりみさき、Compass、美術館、LITS、ましゅ、シャカシャカ、相ダ部屋、Aqre、Tapa、シンプルループ、ヘヤジリン、Kropki、Castle Wall、島国、のりのり、Coral、クロット、バッグ、カーブデータ、四角に切れ、数独、さしがね、Lohkous、橋をかけろ、ヘルゴルフ、Slash Pack、月か太陽、フィルオミノ、チョコバナナ、ファイブセルズ、カクテルランプ、ストストーン、ペンシルズ、Tricklayer、バーンズ、リフレクトリンク、リングリング、環状線スペシャル、なげなわ、アイスウォーク、交差は直角に限る、クロスウォール、Square Jam、シンカミノ、ホタルビーム、ソウルメイツ、ノースリー、とんとんべや、ガイドアロー、Cross Border Parity Loop、Aquapelago、Pentominous、Akichiwake
 列挙 (List Answers): へやわけ、カーブデータ
 
 ==================
@@ -22,7 +22,7 @@ This solver solves given problems "as much as possible"; that is, even if they h
 Disclaimer: The author shall not be liable for any problem caused by using this solver.
 
 List of supported puzzles
-Solve: Nurikabe, Slitherlink, Yajilin, Heyawake, Ekawayeh (Symmetry Heyawake), Slalom, Double Choco, Nurimisaki, Compass, Akari, LITS, Masyu, and Shakashaka, Araf, Aqre, Tapa, Simple Loop, Yajilin (Regions), Kropki, Castle Wall, Shimaguni, Norinori, Coral, Kurotto, Cave, Curve Data, Shikaku, Sudoku, Sashigane, Lohkous, Hashiwokakero, Herugolf, Slash Pack, Moon or Sun, Fillomino, Choco Banana, Fivecells, Cocktail Lamp, Stostone, Pencils, Tricklayer, Barns, Reflect Link, Ring-Ring, Loop Special, Nagenawa, Ice Walk, Kouchoku
+Solve: Nurikabe, Slitherlink, Yajilin, Heyawake, Ekawayeh (Symmetry Heyawake), Slalom, Double Choco, Nurimisaki, Compass, Akari, LITS, Masyu, and Shakashaka, Araf, Aqre, Tapa, Simple Loop, Yajilin (Regions), Kropki, Castle Wall, Shimaguni, Norinori, Coral, Kurotto, Cave, Curve Data, Shikaku, Sudoku, Sashigane, Lohkous, Hashiwokakero, Herugolf, Slash Pack, Moon or Sun, Fillomino, Choco Banana, Fivecells, Cocktail Lamp, Stostone, Pencils, Tricklayer, Barns, Reflect Link, Ring-Ring, Loop Special, Nagenawa, Ice Walk, Kouchoku, Cross Wall, Square Jam, Evolmino, Firefly, Soulmates, No Three, Tontonbeya, Guide Arrow, Cross Border Parity Loop, Aquapelago, Pentominous, Akichiwake
 List Answers: Heyawake, Curve Data
 
 `;

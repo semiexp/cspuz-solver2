@@ -45,7 +45,7 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
         const solve = async (enumerateAnswers: boolean) => {
             const url = this.state.problemUrl;
 
-            const doublechoco = url.startsWith("https://puzz.link/p?dbchoco");
+            const doublechoco = url.startsWith("https://puzz.link/p?dbchoco") || url.startsWith("https://puzz.link/p?evolmino");
 
             this.setState({
                 error: undefined,

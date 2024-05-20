@@ -21,6 +21,8 @@ export type Board =
 export type Item =
     | "dot"
     | "block"
+    | "square"
+    | "triangle"
     | "fill"
     | "circle"
     | "filledCircle"
@@ -42,17 +44,23 @@ export type Item =
     | "pencilDown"
     | "pencilLeft"
     | "pencilRight"
+    | "fireflyUp"
+    | "fireflyDown"
+    | "fireflyLeft"
+    | "fireflyRight"
     | "cross"
     | "line"
     | "dottedLine"
     | "doubleLine"
     | "wall"
     | "boldWall"
+    | "dottedWall"
     | "slash"
     | "backslash"
     | "plus"
     | "dottedHorizontalWall"
     | "dottedVerticalWall"
+    | { kind: "firefly", dot: "up" | "down" | "left" | "right", value: number }
     | { kind: "text", data: string, pos?: string }
     | { kind: "compass", up: number, down: number, left: number, right: number }
     | { kind: "tapaClue", value: number[] }
@@ -70,26 +78,43 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
     const isCell = (y % 2 === 1 && x % 2 === 1);
     const isEdge = !(isVertex || isCell);
 
-    const unitSize = env.unitSize;
+    const unitSize = isVertex ? (env.unitSize * 0.7) : env.unitSize;
 
     if (typeof item !== "string" && item.kind === "lineTo") {
-        const y1 = env.offsetY + unitSize * (y / 2);
-        const x1 = env.offsetX + unitSize * (x / 2);
-        const y2 = env.offsetY + unitSize * (item.destY / 2);
-        const x2 = env.offsetX + unitSize * (item.destX / 2);
+        const y1 = env.offsetY + env.unitSize * (y / 2);
+        const x1 = env.offsetX + env.unitSize * (x / 2);
+        const y2 = env.offsetY + env.unitSize * (item.destY / 2);
+        const x2 = env.offsetX + env.unitSize * (item.destX / 2);
 
         return <line x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={2} stroke={color} />;
     }
-    if (isVertex) {
-        throw new Error("items on vertices are not supported");
-    } else if (isCell) {
-        const centerY = env.offsetY + unitSize * (y / 2);
-        const centerX = env.offsetX + unitSize * (x / 2);
+    if (isVertex || isCell) {
+        const centerY = env.offsetY + env.unitSize * (y / 2);
+        const centerX = env.offsetX + env.unitSize * (x / 2);
 
         if (item === "dot") {
             return <rect x={centerX - unitSize * 0.1} y={centerY - unitSize * 0.1} width={unitSize * 0.2} height={unitSize * 0.2} fill={color} />;
         } else if (item === "block") {
             return <rect x={centerX - unitSize * 0.45} y={centerY - unitSize * 0.45} width={unitSize * 0.9} height={unitSize * 0.9} fill={color} />;
+        } else if (item === "square") {
+            return <rect x={centerX - unitSize * 0.3} y={centerY - unitSize * 0.3} width={unitSize * 0.6} height={unitSize * 0.6} stroke={color} fill="none" />;
+        } else if (item === "triangle") {
+            let shape = [
+                [0.2, 0.8],
+                [0.5, 0.2],
+                [0.8, 0.8],
+            ];
+            let points = [];
+            for (let i = 0; i < shape.length; ++i) {
+                let dx = shape[i][0];
+                let dy = shape[i][1];
+
+                // adjust to the cell
+                dx = centerX + unitSize * (dx - 0.5);
+                dy = centerY + unitSize * (dy - 0.5);
+                points.push(String(dx) + "," + String(dy));
+            }
+            return <polygon points={points.join(" ")} stroke={color} fill="none" />
         } else if (item === "fill") {
             return <rect x={centerX - unitSize * 0.5} y={centerY - unitSize * 0.5} width={unitSize} height={unitSize} fill={color} />;
         } else if (item === "sideArrowUp" || item === "sideArrowDown" || item === "sideArrowLeft" || item === "sideArrowRight" || item === "arrowUp" || item === "arrowDown" || item === "arrowLeft" || item === "arrowRight") {
@@ -159,6 +184,10 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 <line x1={centerX - unitSize * 0.4} x2={centerX + unitSize * 0.4} y1={centerY} y2={centerY} strokeWidth={4} stroke={color} />
                 <line x1={centerX} x2={centerX} y1={centerY - unitSize * 0.4} y2={centerY + unitSize * 0.4} strokeWidth={4} stroke={color} />
             </g>;
+        } else if (item === "smallCircle") {
+            return <circle cx={centerX} cy={centerY} r={env.unitSize * 0.1} stroke={color} fill="none" />
+        } else if (item === "smallFilledCircle") {
+            return <circle cx={centerX} cy={centerY} r={env.unitSize * 0.1} stroke={color} fill={color} />
         } else if (typeof item === "string") {
             throw new Error("unsupported item: " + item);
         } else if ("kind" in item) {
@@ -241,6 +270,25 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                     items.push(<text x={x} y={y} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize / item.size }} fill={color}>{n}</text>);
                 }
                 return <g>{items}</g>;
+            } else if (item.kind === "firefly") {
+                let x = centerX, y = centerY;
+                if (item.dot === "up") {
+                    y -= unitSize * 0.6;
+                } else if (item.dot === "down") {
+                    y += unitSize * 0.6;
+                } else if (item.dot === "left") {
+                    x -= unitSize * 0.6;
+                } else if (item.dot === "right") {
+                    x += unitSize * 0.6;
+                }
+
+                return <g>
+                    <circle cx={centerX} cy={centerY} r={unitSize * 0.6} stroke={color} fill="white" />
+                    <circle cx={x} cy={y} r={unitSize * 0.2} stroke={color} fill={color} />
+                    { item.value >= 0 &&
+                        <text x={centerX} y={centerY} dominantBaseline="central" textAnchor="middle" style={{ fontSize: unitSize }} fill={color}>{item.value}</text>
+                    }
+                </g>
             }
         }
         throw new Error("unsupported item: " + item);
@@ -284,6 +332,12 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
                 return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={strokeWidth} stroke={color} />;
             } else {
                 return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={strokeWidth} stroke={color} />;
+            }
+        } else if (item === "dottedWall") {
+            if (y % 2 === 0) {
+                return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY} y2={centerY} strokeWidth={1} stroke={color} strokeDasharray="4 2" />;
+            } else {
+                return <line x1={centerX} x2={centerX} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} strokeDasharray="4 2" />;
             }
         } else if (item === "smallCircle") {
             return <circle cx={centerX} cy={centerY} r={unitSize * 0.1} stroke={color} fill="none" />
