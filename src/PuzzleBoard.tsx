@@ -16,6 +16,7 @@ export type Board =
             color: string,
             item: Item,
         }[],
+        isUnique?: boolean,
     };
 
 export type Item =

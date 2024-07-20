@@ -96,6 +96,13 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
             }
         };
 
+        let isUnique;
+        if (this.state.result !== undefined && !("answers" in this.state.result)) {
+            isUnique = this.state.result.isUnique;
+        } else {
+            isUnique = undefined;
+        }
+
         return (
             <div>
                 <div>
@@ -107,14 +114,24 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
                     <span> Max # answers: </span>
                     <input type="number" value={this.state.numMaxAnswer} min={1} step={1} onChange={changeNumMaxAnswer} size={4} />
                 </div>
+                <div>
                 {
                     this.state.error &&
-                    <div style={{color: "red"}}>Error: {this.state.error}</div>
+                    <span style={{color: "red"}}>Error: {this.state.error}</span>
                 }
                 {
                     this.state.message &&
-                    <div style={{color: "blue"}}>{this.state.message}</div>
+                    <span style={{color: "black"}}>{this.state.message}</span>
                 }
+                {
+                    isUnique === true &&
+                    <span style={{color: "blue"}}> Unique answer</span>
+                }
+                {
+                    isUnique === false &&
+                    <span style={{color: "red"}}> NOT unique answer (multiple answers)!</span>
+                }
+                </div>
                 {
                     this.state.result && <AnswerViewer result={this.state.result} />
                 }
