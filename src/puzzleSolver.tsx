@@ -2,113 +2,113 @@ import React from "react";
 import { Result } from "./puzzleBoard";
 import { solveProblem, terminateWorker } from "./solverBackend";
 import { AnswerViewer } from "./answerViewer";
+import { Button, CircularProgress, Fab, List, ListItem, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { Settings } from "@mui/icons-material";
 
-type PuzzleSolverState = {
-  problemUrl: string,
-  error?: string,
-  message?: string,
-  result?: Result,
-  solverRunning: boolean,
-  numMaxAnswer: number,
-};
+export const PuzzleSolver = () => {
+  const [problemUrl, setProblemUrl] = React.useState("");
+  const [solverRunning, setSolverRunning] = React.useState(false);
+  const [error, setError] = React.useState<string | undefined>(undefined);
+  const [message, setMessage] = React.useState<string | undefined>(undefined);
+  const [result, setResult] = React.useState<Result | undefined>(undefined);
+  const [numMaxAnswer, setNumMaxAnswer] = React.useState(100);
+  const [language, setLanguage] = React.useState<"ja" | "en">("ja");
 
-export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
-  constructor(props: {}) {
-    super(props);
+  const changeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProblemUrl(e.target.value);
+  };
+  const changeNumMaxAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const n = parseInt(e.target.value);
+    if (!isNaN(n) && n > 0) {
+      setNumMaxAnswer(n);
+    }
+  };
+  const solve = async (enumerateAnswers: boolean) => {
+    const url = problemUrl;
 
-    this.state = {
-      problemUrl: "",
-      solverRunning: false,
-      numMaxAnswer: 100,
-    };
+    setError(undefined);
+    setResult(undefined);
+    setMessage(undefined);
+    setSolverRunning(true);
+
+    const start = Date.now();
+
+    try {
+      const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
+      const elapsed = (Date.now() - start) / 1000;
+
+      if (typeof result === "string") {
+        setError(result);
+        setSolverRunning(false);
+      } else {
+        setResult(result);
+        setMessage("Done! (" + elapsed + "[s])");
+        setSolverRunning(false);
+      }
+    } catch (e: any) {
+      setError(e);
+      setSolverRunning(false);
+    }
+  };
+  const stop = () => {
+      terminateWorker();
+  };
+
+  let isUnique;
+  if (result !== undefined && !("answers" in result)) {
+    isUnique = result.isUnique;
+  } else {
+    isUnique = undefined;
   }
 
-  render() {
-    const solverRunning = this.state.solverRunning;
-    const changeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
-      this.setState({
-        problemUrl: e.target.value,
-      });
-    };
-    const changeNumMaxAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const n = parseInt(e.target.value);
-      if (!isNaN(n) && n > 0) {
-        this.setState({
-          numMaxAnswer: n
-        });
-      }
-    };
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLButtonElement>(null);
+  const handleConfigButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const solve = async (enumerateAnswers: boolean) => {
-      const url = this.state.problemUrl;
-
-      this.setState({
-        error: undefined,
-        result: undefined,
-        message: "Now solving...",
-        solverRunning: true,
-      });
-
-      const start = Date.now();
-
-      try {
-        const result = await solveProblem(url, enumerateAnswers ? this.state.numMaxAnswer : 0);
-        const elapsed = (Date.now() - start) / 1000;
-
-        if (typeof result === "string") {
-          this.setState({
-            error: result,
-            result: undefined,
-            message: undefined,
-            solverRunning: false,
-          });
-        } else {
-          this.setState({
-            error: undefined,
-            result: result,
-            message: "Done! (" + elapsed + "[s])",
-            solverRunning: false,
-          })
-        }
-      } catch (e: any) {
-        this.setState({
-          error: e,
-          result: undefined,
-          message: undefined,
-          solverRunning: false,
-        });
-      }
-    };
-    const stop = () => {
-        terminateWorker();
-    };
-
-    let isUnique;
-    if (this.state.result !== undefined && !("answers" in this.state.result)) {
-      isUnique = this.state.result.isUnique;
-    } else {
-      isUnique = undefined;
-    }
-
-    return (
-      <div>
-        <div>
-          <span> Problem URL: </span>
-          <input type="text" value={this.state.problemUrl} size={40} onChange={changeUrl} />
-          <input type="button" value="Solve" onClick={() => solve(false)} disabled={solverRunning} />
-          <input type="button" value="List Answers" onClick={() => solve(true)} disabled={solverRunning} />
-          <input type="button" value="Stop" onClick={stop} disabled={!solverRunning} />
-          <span> Max # answers: </span>
-          <input type="number" value={this.state.numMaxAnswer} min={1} step={1} onChange={changeNumMaxAnswer} size={4} />
+  return (
+    <>
+      <div style={{width: "100%"}}>
+        <div style={{width: "100%"}}>
+          <Grid container sx={{display: "flex", width: "100%", maxWidth: "800px"}}>
+            <Grid size={9} sx={{display: "flex", alignItems: "center"}}>
+              <Fab color="default" size="small" sx={{marginRight: 1}} onClick={handleConfigButtonClick}>
+                <Settings />
+              </Fab>
+              <TextField label={language == "ja" ? "問題 URL" : "Problem URL"} value={problemUrl} onChange={changeUrl} fullWidth />
+            </Grid>
+            {
+              solverRunning ? (
+                <Grid size={3}>
+                  <Button variant="outlined" color="error" size="large" onClick={stop} sx={{width: "100%", height: "100%"}}>
+                    <CircularProgress size={24} sx={{marginRight: 1}} />
+                    {language == "ja" ? "停止" : "Stop"}
+                  </Button>
+                </Grid>
+              ) : (<>
+                <Grid size={1.5}>
+                  <Button variant="outlined" size="large" onClick={() => solve(false)} sx={{width: "100%", height: "100%"}}>
+                    {language == "ja" ? "解答" : "Solve"}
+                  </Button>
+                </Grid>
+                <Grid size={1.5}>
+                  <Button variant="outlined" size="large" onClick={() => solve(true)} sx={{width: "100%", height: "100%"}}>
+                    {language == "ja" ? "列挙" : "List"}
+                  </Button>
+                </Grid>
+              </>)
+            }
+          </Grid>
         </div>
         <div>
         {
-          this.state.error &&
-          <span style={{color: "red"}}>Error: {this.state.error}</span>
+          error &&
+          <span style={{color: "red"}}>Error: {error}</span>
         }
         {
-          this.state.message &&
-          <span style={{color: "black"}}>{this.state.message}</span>
+          message &&
+          <span style={{color: "black"}}>{message}</span>
         }
         {
           isUnique === true &&
@@ -120,9 +120,44 @@ export class PuzzleSolver extends React.Component<{}, PuzzleSolverState> {
         }
         </div>
         {
-          this.state.result && <AnswerViewer result={this.state.result} />
+          result && <AnswerViewer result={result} />
         }
       </div>
-    )
-  }
-}
+      <Popover
+        open={anchorEl !== null}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <List>
+          <ListItem>
+            <Typography sx={{paddingRight: 1}}>Language: </Typography>
+            <ToggleButtonGroup
+              color="primary"
+              value={language}
+              onChange={(e, value) => setLanguage(value)}
+              exclusive
+            >
+              <ToggleButton value="ja">日本語</ToggleButton>
+              <ToggleButton value="en">English</ToggleButton>
+            </ToggleButtonGroup>
+          </ListItem>
+          <ListItem>
+            <Typography sx={{paddingRight: 1}}>
+              {language == "ja" ? "最大解答数:" : "Max Answers:"}
+            </Typography>
+            <TextField
+              type="number"
+              value={numMaxAnswer}
+              onChange={changeNumMaxAnswer}
+              slotProps={{htmlInput: {size: 6}}}
+            />
+          </ListItem>
+        </List>
+      </Popover>
+    </>
+  )
+};
