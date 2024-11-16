@@ -25,7 +25,7 @@ export function solveProblem(url, numAnswers) {
 
       if (e.data === "no answer") {
         resolve({
-          status: "no answer",
+          status: "noAnswer",
           url,
         });
       } else if (typeof e.data === "string") {
