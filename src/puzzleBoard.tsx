@@ -1,3 +1,4 @@
+import React, { ReactSVGElement } from "react";
 import { ReactElement } from "react";
 
 export type MultipleAnswers = { common: Board, answers: Board[] };
@@ -104,7 +105,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
         [0.5, 0.2],
         [0.8, 0.8],
       ];
-      let points = [];
+      let points: string[] = [];
       for (let i = 0; i < shape.length; ++i) {
         let dx = shape[i][0];
         let dy = shape[i][1];
@@ -127,7 +128,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
         [0.5, 0.15],
         [0.1, 0.15]
       ];
-      let points = [];
+      let points: string[] = [];
       for (let i = 0; i < shape.length; ++i) {
         let dx = shape[i][0];
         let dy = shape[i][1];
@@ -230,7 +231,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
           }
         </g>
       } else if (item.kind === "tapaClue") {
-        let values = [];
+        let values: string[] = [];
         for (let i = 0; i < item.value.length; ++i) {
           if (item.value[i] === -2) {
             values.push("?");
@@ -260,7 +261,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
           </g>;
         }
       } else if (item.kind === "sudokuCandidateSet") {
-        let items = [];
+        let items: ReactElement[] = [];
         for (let i = 0; i < item.values.length; ++i) {
           const n = item.values[i];
           const gx = (n - 1) % item.size;
@@ -350,7 +351,7 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
 }
 
 function aboloPoints(centerY: number, centerX: number, unitSize: number, skip: number): string {
-  let ret = [];
+  let ret: string[] = [];
   if (skip !== 0) {
     ret.push(`${centerX - unitSize / 2},${centerY - unitSize / 2}`);
   }
@@ -400,7 +401,7 @@ export function renderBoard(boards: Board[]): ReactElement {
     unitSize,
   };
 
-  const components = [];
+  const components: ReactElement[] = [];
   let heightMax = 0;
   let widthMax = 0;
 
