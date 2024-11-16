@@ -1,14 +1,15 @@
 import React from "react";
 import { solveProblem, terminateWorker, SolverResult } from "./solverBackend";
 import { AnswerViewer } from "./answerViewer";
-import { Button, CircularProgress, Fab, List, ListItem, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, Fab, List, ListItem, ListItemButton, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Settings } from "@mui/icons-material";
+import { ExpandMore, Settings } from "@mui/icons-material";
 
 export const PuzzleSolver = () => {
   const [problemUrl, setProblemUrl] = React.useState("");
   const [solverRunning, setSolverRunning] = React.useState(false);
   const [result, setResult] = React.useState<SolverResult | undefined>(undefined);
+  const [history, setHistory] = React.useState<SolverResult[]>([]);
   const [numMaxAnswer, setNumMaxAnswer] = React.useState(100);
   const [language, setLanguage] = React.useState<"ja" | "en">("ja");
 
@@ -29,10 +30,22 @@ export const PuzzleSolver = () => {
 
     const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
     setResult(result);
+
+    const newHistory = [result];
+    newHistory.push(...history);
+    setHistory(newHistory);
     setSolverRunning(false);
   };
   const stop = () => {
       terminateWorker();
+  };
+  const selectFromHistory = (i: number) => {
+    if (solverRunning) {
+      return;
+    }
+    const r = history[i];
+    setProblemUrl(r.url);
+    setResult(r);
   };
 
   let isUnique: boolean | undefined = undefined;
@@ -101,6 +114,24 @@ export const PuzzleSolver = () => {
               </>)
             }
           </Grid>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Typography>{language == "ja" ? "履歴" : "History"}</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{maxHeight: "300px", overflowY: "auto"}}>
+              <List>
+                {history.map((r, i) => (
+                  <ListItemButton
+                    key={i}
+                    onClick={() => selectFromHistory(i)}
+                    sx={{overflow: "hidden", textWrap: "nowrap", textOverflow: "ellipsis", whiteSpace: "nowrap"}}
+                  >
+                    <Typography>{r.url}</Typography>
+                  </ListItemButton>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
         </div>
         <div>
         {
