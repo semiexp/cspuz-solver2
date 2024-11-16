@@ -1,24 +1,50 @@
 import Worker from "./solverWorker?worker";
 
 let worker = null;
-let currentReject = null;
+let currentResolve = null;
+let currentUrl = null;
 
 export function solveProblem(url, numAnswers) {
   if (worker === null) {
     worker = new Worker();
   }
-  if (currentReject !== null) {
-    return new Promise((resolve, reject) => {
-      reject("solver already running");
+  if (currentResolve !== null) {
+    return new Promise((resolve) => {
+      resolve({
+        status: "error",
+        url,
+        error: "solver already running",
+      })
     });
   }
-  return new Promise((resolve, reject) => {
+  currentUrl = url;
+  return new Promise((resolve) => {
+    const start = Date.now();
     worker.onmessage = (e) => {
-      currentReject = null;
-      resolve(e.data);
+      currentResolve = null;
+
+      if (e.data === "no answer") {
+        resolve({
+          status: "no answer",
+          url,
+        });
+      } else if (typeof e.data === "string") {
+        resolve({
+          status: "error",
+          url,
+          error: e.data,
+        });
+      } else {
+        resolve({
+          status: "success",
+          url,
+          result: e.data,
+          elapsed: Date.now() - start,
+        });
+      }
     };
     worker.postMessage({url, numAnswers});
-    currentReject = reject;
+    currentResolve = resolve;
   });
 }
 
@@ -27,9 +53,12 @@ export function terminateWorker() {
   worker.terminate();
   worker = null;
 
-  if (currentReject !== null) {
-    const reject = currentReject;
-    currentReject = null;
-    reject("terminated");
+  if (currentResolve !== null) {
+    const resolve = currentResolve;
+    currentResolve = null;
+    resolve({
+      status: "terminated",
+      url: currentUrl,
+    });
   }
 }

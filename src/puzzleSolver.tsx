@@ -1,6 +1,5 @@
 import React from "react";
-import { Result } from "./puzzleBoard";
-import { solveProblem, terminateWorker } from "./solverBackend";
+import { solveProblem, terminateWorker, SolverResult } from "./solverBackend";
 import { AnswerViewer } from "./answerViewer";
 import { Button, CircularProgress, Fab, List, ListItem, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
@@ -9,9 +8,7 @@ import { Settings } from "@mui/icons-material";
 export const PuzzleSolver = () => {
   const [problemUrl, setProblemUrl] = React.useState("");
   const [solverRunning, setSolverRunning] = React.useState(false);
-  const [error, setError] = React.useState<string | undefined>(undefined);
-  const [message, setMessage] = React.useState<string | undefined>(undefined);
-  const [result, setResult] = React.useState<Result | undefined>(undefined);
+  const [result, setResult] = React.useState<SolverResult | undefined>(undefined);
   const [numMaxAnswer, setNumMaxAnswer] = React.useState(100);
   const [language, setLanguage] = React.useState<"ja" | "en">("ja");
 
@@ -27,41 +24,45 @@ export const PuzzleSolver = () => {
   const solve = async (enumerateAnswers: boolean) => {
     const url = problemUrl;
 
-    setError(undefined);
     setResult(undefined);
-    setMessage(undefined);
     setSolverRunning(true);
 
-    const start = Date.now();
-
-    try {
-      const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
-      const elapsed = (Date.now() - start) / 1000;
-
-      if (typeof result === "string") {
-        setError(result);
-        setSolverRunning(false);
-      } else {
-        setResult(result);
-        setMessage("Done! (" + elapsed + "[s])");
-        setSolverRunning(false);
-      }
-    } catch (e: any) {
-      setError(e);
-      setSolverRunning(false);
-    }
+    const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
+    setResult(result);
+    setSolverRunning(false);
   };
   const stop = () => {
       terminateWorker();
   };
 
-  let isUnique;
-  if (result !== undefined && !("answers" in result)) {
-    isUnique = result.isUnique;
+  let isUnique: boolean | undefined = undefined;
+  if (result !== undefined && result.status === "success") {
+    const r = result.result;
+    if ("isUnique" in r) {
+      isUnique = r.isUnique;
+    }
   } else {
     isUnique = undefined;
   }
 
+  let error: string | undefined = undefined;
+  if (result !== undefined) {
+    if (result.status === "error") {
+      error = result.error;
+    } else if (result.status === "terminated") {
+      error = (language === "ja") ? "中断しました" : "Terminated";
+    } else if (result.status === "noAnswer") {
+      error = (language === "ja") ? "解がありません" : "No answer";
+    }
+  }
+  let message: string | undefined = undefined;
+  if (result !== undefined && result.status === "success") {
+    if (language === "ja") {
+      message = `解けました！(${result.elapsed}ms)`;
+    } else {
+      message = `Solved! (${result.elapsed}ms)`;
+    }
+  }
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLButtonElement>(null);
   const handleConfigButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -70,8 +71,8 @@ export const PuzzleSolver = () => {
   return (
     <>
       <div style={{width: "100%"}}>
-        <div style={{width: "100%"}}>
-          <Grid container sx={{display: "flex", width: "100%", maxWidth: "800px"}}>
+        <div style={{width: "100%", maxWidth: "800px"}}>
+          <Grid container sx={{display: "flex", width: "100%"}}>
             <Grid size={9} sx={{display: "flex", alignItems: "center"}}>
               <Fab color="default" size="small" sx={{marginRight: 1}} onClick={handleConfigButtonClick}>
                 <Settings />
@@ -112,15 +113,15 @@ export const PuzzleSolver = () => {
         }
         {
           isUnique === true &&
-          <span style={{color: "blue"}}> Unique answer</span>
+          <span style={{color: "blue"}}> {language === "ja" ? "唯一解です" : "Unique answer"}</span>
         }
         {
           isUnique === false &&
-          <span style={{color: "red"}}> NOT unique answer (multiple answers)!</span>
+          <span style={{color: "red"}}> {language === "ja" ? "複数解があります！" : "NOT unique answer (multiple answers)!"}</span>
         }
         </div>
         {
-          result && <AnswerViewer result={result} />
+          result && result.status === "success" && <AnswerViewer result={result.result} />
         }
       </div>
       <Popover
