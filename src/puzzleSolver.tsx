@@ -1,9 +1,10 @@
 import React from "react";
 import { solveProblem, terminateWorker, SolverResult } from "./solverBackend";
 import { AnswerViewer } from "./answerViewer";
+import { Usage } from "./usage";
 import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, Fab, List, ListItem, ListItemButton, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { ExpandMore, Settings } from "@mui/icons-material";
+import { ExpandMore, Help, Settings } from "@mui/icons-material";
 
 let solveOnLoadDone = false;
 
@@ -81,9 +82,13 @@ export const PuzzleSolver = () => {
       message = `Solved! (${result.elapsed}ms)`;
     }
   }
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLButtonElement>(null);
+  const [configAnchorEl, setConfigAnchorEl] = React.useState<null | HTMLButtonElement>(null);
   const handleConfigButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    setConfigAnchorEl(event.currentTarget);
+  };
+  const [helpAnchorEl, setHelpAnchorEl] = React.useState<null | HTMLButtonElement>(null);
+  const handleHelpButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setHelpAnchorEl(event.currentTarget);
   };
 
   const loadProblemFromUrlHash = () => {
@@ -124,10 +129,13 @@ export const PuzzleSolver = () => {
         <div style={{width: "100%", maxWidth: "800px"}}>
           <Grid container sx={{display: "flex", width: "100%"}}>
             <Grid size={9} sx={{display: "flex", alignItems: "center"}}>
+              <Fab color="default" size="small" sx={{marginRight: 1}} onClick={handleHelpButtonClick}>
+                <Help />
+              </Fab>
               <Fab color="default" size="small" sx={{marginRight: 1}} onClick={handleConfigButtonClick}>
                 <Settings />
               </Fab>
-              <TextField label={language == "ja" ? "問題 URL" : "Problem URL"} value={problemUrl} onChange={changeUrl} fullWidth />
+              <TextField label={language == "ja" ? "問題 URL" : "Problem URL"} value={problemUrl} onChange={changeUrl} sx={{flexGrow: 1}} />
             </Grid>
             {
               solverRunning ? (
@@ -193,9 +201,9 @@ export const PuzzleSolver = () => {
         }
       </div>
       <Popover
-        open={anchorEl !== null}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
+        open={configAnchorEl !== null}
+        anchorEl={configAnchorEl}
+        onClose={() => setConfigAnchorEl(null)}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left",
@@ -226,6 +234,17 @@ export const PuzzleSolver = () => {
             />
           </ListItem>
         </List>
+      </Popover>
+      <Popover
+        open={helpAnchorEl !== null}
+        anchorEl={helpAnchorEl}
+        onClose={() => setHelpAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <Usage language={language} />
       </Popover>
     </>
   )
