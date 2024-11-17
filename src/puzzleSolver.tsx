@@ -170,7 +170,7 @@ export const PuzzleSolver = () => {
             <ToggleButtonGroup
               color="primary"
               value={language}
-              onChange={(e, value) => setLanguage(value)}
+              onChange={(_, value) => setLanguage(value)}
               exclusive
             >
               <ToggleButton value="ja">日本語</ToggleButton>

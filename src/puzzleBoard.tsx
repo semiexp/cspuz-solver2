@@ -1,4 +1,3 @@
-import React, { ReactSVGElement } from "react";
 import { ReactElement } from "react";
 
 export type MultipleAnswers = { common: Board, answers: Board[] };
