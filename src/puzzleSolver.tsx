@@ -5,6 +5,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress
 import Grid from "@mui/material/Grid2";
 import { ExpandMore, Settings } from "@mui/icons-material";
 
+let solveOnLoadDone = false;
+
 export const PuzzleSolver = () => {
   const [problemUrl, setProblemUrl] = React.useState("");
   const [solverRunning, setSolverRunning] = React.useState(false);
@@ -22,18 +24,21 @@ export const PuzzleSolver = () => {
       setNumMaxAnswer(n);
     }
   };
-  const solve = async (enumerateAnswers: boolean) => {
-    const url = problemUrl;
-
+  const solve = async (url: string, enumerateAnswers: boolean) => {
     setResult(undefined);
     setSolverRunning(true);
 
     const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
     setResult(result);
 
-    const newHistory = [result];
-    newHistory.push(...history);
-    setHistory(newHistory);
+    setHistory((history) => {
+      const newHistory = [result];
+      newHistory.push(...history);
+      if (newHistory.length > 50) {
+        newHistory.pop();
+      }
+      return newHistory;
+    });
     setSolverRunning(false);
   };
   const stop = () => {
@@ -81,6 +86,38 @@ export const PuzzleSolver = () => {
     setAnchorEl(event.currentTarget);
   };
 
+  const loadProblemFromUrlHash = () => {
+    if (window.location.hash === "") {
+      return;
+    }
+
+    const hash = window.location.hash.substring(1);
+    if (!hash.startsWith("url=")) {
+      return;
+    }
+
+    const url = decodeURIComponent(hash.substring(4));
+    setProblemUrl(url);
+    solve(url, false);
+  };
+
+  React.useEffect(() => {
+    if (!solveOnLoadDone) {
+      solveOnLoadDone = true;
+      loadProblemFromUrlHash();
+    }
+
+    const onHashChange = () => {
+      console.log("hash change");
+      loadProblemFromUrlHash();
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => {
+      window.removeEventListener("hashchange", onHashChange);
+    };
+  }, []);
+
   return (
     <>
       <div style={{width: "100%"}}>
@@ -102,12 +139,12 @@ export const PuzzleSolver = () => {
                 </Grid>
               ) : (<>
                 <Grid size={1.5}>
-                  <Button variant="outlined" size="large" onClick={() => solve(false)} sx={{width: "100%", height: "100%"}}>
+                  <Button variant="outlined" size="large" onClick={() => solve(problemUrl, false)} sx={{width: "100%", height: "100%"}}>
                     {language == "ja" ? "解答" : "Solve"}
                   </Button>
                 </Grid>
                 <Grid size={1.5}>
-                  <Button variant="outlined" size="large" onClick={() => solve(true)} sx={{width: "100%", height: "100%"}}>
+                  <Button variant="outlined" size="large" onClick={() => solve(problemUrl, true)} sx={{width: "100%", height: "100%"}}>
                     {language == "ja" ? "列挙" : "List"}
                   </Button>
                 </Grid>
