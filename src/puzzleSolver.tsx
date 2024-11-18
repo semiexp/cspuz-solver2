@@ -25,8 +25,10 @@ export const PuzzleSolver = () => {
       setNumMaxAnswer(n);
     }
   };
-  const solve = async (url: string, enumerateAnswers: boolean) => {
-    setResult(undefined);
+  const solve = async (url: string, enumerateAnswers: boolean, keep?: boolean) => {
+    if (keep === undefined || !keep) {
+      setResult(undefined);
+    }
     setSolverRunning(true);
 
     const result = await solveProblem(url, enumerateAnswers ? numMaxAnswer : 0);
@@ -97,13 +99,37 @@ export const PuzzleSolver = () => {
     }
 
     const hash = window.location.hash.substring(1);
-    if (!hash.startsWith("url=")) {
+    const hashParts = hash.split("&");
+
+    let keep = undefined;
+    let url = undefined;
+
+    for (const part of hashParts) {
+      const toks = part.split("=");
+      if (toks.length !== 2) {
+        continue;
+      }
+      const key = toks[0];
+      const value = toks[1];
+      if (key === "keep") {
+        keep = value === "true" || value === "1";
+      } else if (key === "url") {
+        url = decodeURIComponent(value);
+      }
+    }
+
+    if (url === undefined) {
       return;
     }
 
-    const url = decodeURIComponent(hash.substring(4));
-    setProblemUrl(url);
-    solve(url, false);
+    if (solverRunning) {
+      terminateWorker();
+    }
+
+    Promise.resolve().then(() => {
+      setProblemUrl(url);
+      solve(url, false, keep);
+    });
   };
 
   React.useEffect(() => {
@@ -111,9 +137,10 @@ export const PuzzleSolver = () => {
       solveOnLoadDone = true;
       loadProblemFromUrlHash();
     }
+  }, []);
 
+  React.useEffect(() => {
     const onHashChange = () => {
-      console.log("hash change");
       loadProblemFromUrlHash();
     };
 
@@ -121,7 +148,7 @@ export const PuzzleSolver = () => {
     return () => {
       window.removeEventListener("hashchange", onHashChange);
     };
-  }, []);
+  }, [solverRunning]);
 
   return (
     <>
