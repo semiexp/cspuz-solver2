@@ -155,5 +155,12 @@ export const Usage = (props: {language: "ja" | "en"}) => {
         )
       }
     </Typography>
+    <Typography>
+      <p>
+        <a href="license.txt">
+          {language === "ja" ? "ライセンス" : "License"}
+        </a>
+      </p>
+    </Typography>
   </Box>);
 };
