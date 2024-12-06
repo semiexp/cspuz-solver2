@@ -60,6 +60,13 @@ export type Item =
   | "plus"
   | "dottedHorizontalWall"
   | "dottedVerticalWall"
+  | "firewalkCellUnknown"
+  | "firewalkCellUl"
+  | "firewalkCellUr"
+  | "firewalkCellDl"
+  | "firewalkCellDr"
+  | "firewalkCellUlDr"
+  | "firewalkCellUrDl"
   | { kind: "firefly", dot: "up" | "down" | "left" | "right", value: number }
   | { kind: "text", data: string, pos?: string }
   | { kind: "compass", up: number, down: number, left: number, right: number }
@@ -188,6 +195,29 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
       return <circle cx={centerX} cy={centerY} r={env.unitSize * 0.1} stroke={color} fill="none" />
     } else if (item === "smallFilledCircle") {
       return <circle cx={centerX} cy={centerY} r={env.unitSize * 0.1} stroke={color} fill={color} />
+    } else if (typeof item === "string" && item.startsWith("firewalkCell")) {
+      let items = [];
+
+      items.push(<polygon
+        points={`${centerX - unitSize / 4},${centerY} ${centerX},${centerY - unitSize / 4} ${centerX + unitSize / 4},${centerY} ${centerX},${centerY + unitSize / 4}`}
+        fill="#ffe0e0"
+      />);
+      if (item === "firewalkCellUl" || item === "firewalkCellUlDr") {
+        items.push(<line x1={centerX - unitSize / 4} x2={centerX} y1={centerY} y2={centerY - unitSize / 4} strokeWidth={2} stroke={color} />);
+      }
+      if (item === "firewalkCellUr" || item === "firewalkCellUrDl") {
+        items.push(<line x1={centerX + unitSize / 4} x2={centerX} y1={centerY} y2={centerY - unitSize / 4} strokeWidth={2} stroke={color} />);
+      }
+      if (item === "firewalkCellDl" || item === "firewalkCellUrDl") {
+        items.push(<line x1={centerX - unitSize / 4} x2={centerX} y1={centerY} y2={centerY + unitSize / 4} strokeWidth={2} stroke={color} />);
+      }
+      if (item === "firewalkCellDr" || item === "firewalkCellUlDr") {
+        items.push(<line x1={centerX + unitSize / 4} x2={centerX} y1={centerY} y2={centerY + unitSize / 4} strokeWidth={2} stroke={color} />);
+      }
+
+      return <g>
+        {items}
+      </g>;
     } else if (typeof item === "string") {
       throw new Error("unsupported item: " + item);
     } else if ("kind" in item) {
