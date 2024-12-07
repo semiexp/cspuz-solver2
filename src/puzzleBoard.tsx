@@ -57,6 +57,8 @@ export type Item =
   | "dottedWall"
   | "slash"
   | "backslash"
+  | "dottedSlash"
+  | "dottedBackslash"
   | "plus"
   | "dottedHorizontalWall"
   | "dottedVerticalWall"
@@ -186,6 +188,10 @@ function renderItem(env: RenderEnv, y: number, x: number, color: string, item: I
       return <line x1={centerX + unitSize / 2} x2={centerX - unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
     } else if (item === "backslash") {
       return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} />
+    } else if (item === "dottedSlash") {
+      return <line x1={centerX + unitSize / 2} x2={centerX - unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} strokeDasharray="4 2" />
+    } else if (item === "dottedBackslash") {
+      return <line x1={centerX - unitSize / 2} x2={centerX + unitSize / 2} y1={centerY - unitSize / 2} y2={centerY + unitSize / 2} strokeWidth={1} stroke={color} strokeDasharray="4 2" />
     } else if (item === "plus") {
       return <g>
         <line x1={centerX - unitSize * 0.4} x2={centerX + unitSize * 0.4} y1={centerY} y2={centerY} strokeWidth={4} stroke={color} />
