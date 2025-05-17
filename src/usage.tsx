@@ -1,12 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import Puzzles from "./puzzles.json";
 
-const puzzleList = (language: "ja" | "en") => {
-  if (language === "ja") {
-    return Puzzles.map((puzzle) => puzzle.ja).join("、");
-  } else {
-    return Puzzles.map((puzzle) => puzzle.en).join(", ");
-  }
+const puzzleList = (language: "ja" | "en", mode: "solve" | "enumerate") => {
+  const sep = language === "ja" ? "、" : ", ";
+
+  return Puzzles[mode].map((puzzle) => puzzle[language]).join(sep);
 };
 
 export const Usage = (props: {language: "ja" | "en"}) => {
@@ -125,28 +123,12 @@ export const Usage = (props: {language: "ja" | "en"}) => {
       {language === "ja" ? "対応パズル一覧" : "List of supported puzzles"}
     </Typography>
     <Typography>
-      {
-        language === "ja" ? (
-          <p>
-            解答: {puzzleList("ja")}
-          </p>
-        ) : (
-          <p>
-            Solve: {puzzleList("en")}
-          </p>
-        )
-      }
-      {
-        language === "ja" ? (
-          <p>
-            列挙: へやわけ、カーブデータ
-          </p>
-        ) : (
-          <p>
-          List: Heyawake, Curve Data
-          </p>
-        )
-      }
+      <p>
+        {language === "ja" ? "解答" : "Solve"}: {puzzleList(language, "solve")}
+      </p>
+      <p>
+        {language === "ja" ? "列挙" : "List"}: {puzzleList(language, "enumerate")}
+      </p>
     </Typography>
     <Typography variant="h5">
       {language === "ja" ? "免責事項" : "Disclaimer"}
