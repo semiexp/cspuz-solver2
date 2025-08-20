@@ -13,6 +13,16 @@ export const Usage = (props: {language: "ja" | "en"}) => {
   const currentUrl = location.protocol + "//" + location.host + location.pathname;
   const bookmarkUrl = 'javascript:void(window.open(`' + currentUrl + '#url=${encodeURIComponent(ui.puzzle.getURL(pzpr.parser.URL_PZPRV3))}`,target="__solver_window"))';
 
+  const cspuzSolver2Version = document
+    .querySelector('meta[name="revision-cspuz-solver2"]')
+    ?.getAttribute("content");
+  const cspuzCoreVersion = document
+    .querySelector('meta[name="revision-cspuz-core"]')
+    ?.getAttribute("content");
+  const buildDate = document
+    .querySelector('meta[name="build-date"]')
+    ?.getAttribute("content");
+
   return (<Box sx={{overflowY: "scroll", maxHeight: "600px"}}>
     <Typography variant="h5">
       {
@@ -145,6 +155,30 @@ export const Usage = (props: {language: "ja" | "en"}) => {
           </p>
         )
       }
+    </Typography>
+    <Typography variant="h5">
+      {language === "ja" ? "バージョン情報" : "Version Information"}
+    </Typography>
+    <Typography>
+      {cspuzSolver2Version && (
+        <>
+          <a href="https://github.com/semiexp/cspuz-solver2">
+            cspuz-solver2
+          </a>
+          : {cspuzSolver2Version} <br />
+        </>
+      )}
+      {cspuzCoreVersion && (
+        <>
+          <a href="https://github.com/semiexp/cspuz_core">cspuz-core</a>
+          : {cspuzCoreVersion} <br />
+        </>
+      )}
+      {buildDate && (
+        <>
+          {language === "ja" ? "ビルド時刻" : "Build date"}: {buildDate} <br />
+        </>
+      )}
     </Typography>
     <Typography>
       <p>
