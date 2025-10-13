@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MultipleAnswers, Result, renderBoard } from "./puzzleBoard";
+import { MultipleAnswers, Result, renderBoard } from "puzzle-board";
 
 type AnswerViewerProps = {
   result: Result,    

@@ -20,6 +20,9 @@ importers:
       '@mui/material':
         specifier: ^6.1.7
         version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      puzzle-board:
+        specifier: link:packages/puzzle-board
+        version: link:packages/puzzle-board
       react:
         specifier: ^18.3.1
         version: 18.3.1
