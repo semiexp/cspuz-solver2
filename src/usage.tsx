@@ -187,5 +187,29 @@ export const Usage = (props: {language: "ja" | "en"}) => {
         </a>
       </p>
     </Typography>
+    <Typography variant="h5">
+      {language === "ja" ? "問い合わせ" : "Contact"}
+    </Typography>
+    <Typography>
+      {
+        language === "ja" ? (
+          <p>
+            バグ報告、機能やパズル種の追加要望などがありましたら、以下までご連絡ください。
+          </p>
+        ) : (
+          <p>
+            If you have any bug reports, feature requests, or requests for additional puzzle types, please contact us at the following.
+          </p>
+        )
+      }
+      <ul>
+        <li>
+          <a href="https://github.com/semiexp/cspuz-solver2/issues">GitHub</a>
+        </li>
+        <li>
+          <a href="https://twitter.com/semiexp">Twitter (@semiexp)</a>
+        </li>
+      </ul>
+    </Typography>
   </Box>);
 };
