@@ -1,0 +1,37 @@
+{
+  "puzzleSolver": {
+    "problemUrl": "Problem URL",
+    "stop": "Stop",
+    "solve": "Solve",
+    "list": "List",
+    "history": "History",
+    "terminated": "Terminated",
+    "noAnswer": "No answer",
+    "solved": "Solved! ({{elapsed}}ms)",
+    "uniqueAnswer": "Unique answer",
+    "multipleAnswers": "NOT unique answer (multiple answers)!",
+    "maxAnswers": "Max Answers:"
+  },
+  "usage": {
+    "overview": "Overview",
+    "overviewText": "This is a solver for pencil puzzles such as \"Sudoku\". This solver can solve any problems of supported puzzles (given enough time).",
+    "usage": "Usage",
+    "usageText1": "Input the problem URL (pzv.jp / puzz.link / Kudamono Editor) to \"Problem URL\" and press the \"Solve\" button to display the answer. If you wish to enumerate all answers (up to \"Max Answers\" in the setting), press the \"List\" button. You can stop the solver by pressing the \"Stop\" button if it takes too long.",
+    "usageText2": "This solver will solve the problem \"as much as possible\" when you press the \"Solve\" button. In other words, it will report all lines, cells, etc. that are common to all solutions, even if there are multiple solutions.",
+    "usageText3": "You can also check the results of problems solved in the past (up to 50) from the \"History\". Please note that the \"History\" will be cleared when you reload the page.",
+    "usageText4": "This solver uses your machine's CPU to perform calculations for the answer. Therefore, your machine may run slower while solving, but please be aware of this. On the other hand, this solver does not send any information about the problems you solve to the server, so you can safely use it for checking problems to be posted in magazines, etc.",
+    "puzzleLinkIntegration": "puzz.link Integration",
+    "puzzleLinkIntegrationText": "Bookmark the link below, and open this bookmark in the problem editor site of puzz.link to open the solver in a new window/tab and check the answer.",
+    "bookmarkUrl": "Bookmark URL",
+    "supportedPuzzles": "List of supported puzzles",
+    "solve": "Solve",
+    "listAnswers": "List",
+    "disclaimer": "Disclaimer",
+    "disclaimerText": "The author shall not be liable for any problem caused by using this solver.",
+    "versionInfo": "Version Information",
+    "buildDate": "Build date",
+    "license": "License",
+    "contact": "Contact",
+    "contactText": "If you have any bug reports, feature requests, or requests for additional puzzle types, please contact us at the following."
+  }
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { solveProblem, terminateWorker, SolverResult } from "./solverBackend";
 import { AnswerViewer } from "./answerViewer";
 import { Usage } from "./usage";
@@ -9,12 +10,12 @@ import { ExpandMore, Help, Settings } from "@mui/icons-material";
 let solveOnLoadDone = false;
 
 export const PuzzleSolver = () => {
+  const { t, i18n } = useTranslation();
   const [problemUrl, setProblemUrl] = React.useState("");
   const [solverRunning, setSolverRunning] = React.useState(false);
   const [result, setResult] = React.useState<SolverResult | undefined>(undefined);
   const [history, setHistory] = React.useState<SolverResult[]>([]);
   const [numMaxAnswer, setNumMaxAnswer] = React.useState(100);
-  const [language, setLanguage] = React.useState<"ja" | "en">("ja");
 
   const changeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProblemUrl(e.target.value);
@@ -71,18 +72,14 @@ export const PuzzleSolver = () => {
     if (result.status === "error") {
       error = result.error;
     } else if (result.status === "terminated") {
-      error = (language === "ja") ? "中断しました" : "Terminated";
+      error = t("puzzleSolver.terminated");
     } else if (result.status === "noAnswer") {
-      error = (language === "ja") ? "解がありません" : "No answer";
+      error = t("puzzleSolver.noAnswer");
     }
   }
   let message: string | undefined = undefined;
   if (result !== undefined && result.status === "success") {
-    if (language === "ja") {
-      message = `解けました！(${result.elapsed}ms)`;
-    } else {
-      message = `Solved! (${result.elapsed}ms)`;
-    }
+    message = t("puzzleSolver.solved", { elapsed: result.elapsed });
   }
   const [configAnchorEl, setConfigAnchorEl] = React.useState<null | HTMLButtonElement>(null);
   const handleConfigButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -162,25 +159,25 @@ export const PuzzleSolver = () => {
               <Fab color="default" size="small" sx={{marginRight: 1}} onClick={handleConfigButtonClick}>
                 <Settings />
               </Fab>
-              <TextField label={language == "ja" ? "問題 URL" : "Problem URL"} value={problemUrl} onChange={changeUrl} sx={{flexGrow: 1}} />
+              <TextField label={t("puzzleSolver.problemUrl")} value={problemUrl} onChange={changeUrl} sx={{flexGrow: 1}} />
             </Grid>
             {
               solverRunning ? (
                 <Grid size={3}>
                   <Button variant="outlined" color="error" size="large" onClick={stop} sx={{width: "100%", height: "100%"}}>
                     <CircularProgress size={24} sx={{marginRight: 1}} />
-                    {language == "ja" ? "停止" : "Stop"}
+                    {t("puzzleSolver.stop")}
                   </Button>
                 </Grid>
               ) : (<>
                 <Grid size={1.5}>
                   <Button variant="outlined" size="large" onClick={() => solve(problemUrl, false)} sx={{width: "100%", height: "100%"}}>
-                    {language == "ja" ? "解答" : "Solve"}
+                    {t("puzzleSolver.solve")}
                   </Button>
                 </Grid>
                 <Grid size={1.5}>
                   <Button variant="outlined" size="large" onClick={() => solve(problemUrl, true)} sx={{width: "100%", height: "100%"}}>
-                    {language == "ja" ? "列挙" : "List"}
+                    {t("puzzleSolver.list")}
                   </Button>
                 </Grid>
               </>)
@@ -188,7 +185,7 @@ export const PuzzleSolver = () => {
           </Grid>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography>{language == "ja" ? "履歴" : "History"}</Typography>
+              <Typography>{t("puzzleSolver.history")}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{maxHeight: "300px", overflowY: "auto"}}>
               <List>
@@ -216,11 +213,11 @@ export const PuzzleSolver = () => {
         }
         {
           isUnique === true &&
-          <span style={{color: "blue"}}> {language === "ja" ? "唯一解です" : "Unique answer"}</span>
+          <span style={{color: "blue"}}> {t("puzzleSolver.uniqueAnswer")}</span>
         }
         {
           isUnique === false &&
-          <span style={{color: "red"}}> {language === "ja" ? "複数解があります！" : "NOT unique answer (multiple answers)!"}</span>
+          <span style={{color: "red"}}> {t("puzzleSolver.multipleAnswers")}</span>
         }
         </div>
         {
@@ -241,8 +238,8 @@ export const PuzzleSolver = () => {
             <Typography sx={{paddingRight: 1}}>Language: </Typography>
             <ToggleButtonGroup
               color="primary"
-              value={language}
-              onChange={(_, value) => { if (value !== null) setLanguage(value) } }
+              value={i18n.language}
+              onChange={(_, value) => { if (value !== null) i18n.changeLanguage(value) } }
               exclusive
             >
               <ToggleButton value="ja">日本語</ToggleButton>
@@ -251,7 +248,7 @@ export const PuzzleSolver = () => {
           </ListItem>
           <ListItem>
             <Typography sx={{paddingRight: 1}}>
-              {language == "ja" ? "最大解答数:" : "Max Answers:"}
+              {t("puzzleSolver.maxAnswers")}
             </Typography>
             <TextField
               type="number"
@@ -271,7 +268,7 @@ export const PuzzleSolver = () => {
           horizontal: "left",
         }}
       >
-        <Usage language={language} />
+        <Usage />
       </Popover>
     </>
   )
